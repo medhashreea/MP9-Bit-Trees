@@ -2,23 +2,18 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 
 /**
- * Store mappings from bits to values
+ * Store only the value
  * 
  * @author Medhashree Adhikari
  */
 
-public class BitTree {
+public class BitTreeLeaf implements BitTreeNode {
   // +--------+------------------------------------------------------------
   // | Fields |
   // +--------+
 
-  // +--------------+------------------------------------------------------
-  // | Constructors |
-  // +--------------+
-
-  public BitTree(int n) {
-    // STUB
-  }
+  // the value of the node
+  private String value;
 
   // +---------+-----------------------------------------------------------
   // | Methods |
@@ -29,25 +24,19 @@ public class BitTree {
    * 
    * @param bits
    * @param value
-   * @return
    */
   public void set(String bits, String value) {
-    // STUB
-    // throw an exception if bits is the inappropriate length or contains values
-    // other than 0 or 1
+    this.value = value;
   } // set(String, String)
 
   /**
    * returns the value at the end
    * 
    * @param bits
-   * @return
+   * @return value
    */
   public String get(String bits) {
-    // STUB
-    // If there is no such path, or if bits is the incorrect length, get should
-    // throw an exception.
-    return null;
+    return this.value;
   } // get(String)
 
   /**
@@ -56,7 +45,7 @@ public class BitTree {
    * @param pen
    */
   public void dump(PrintWriter pen) {
-    // STUB
+    pen.println(this.value);
   } // dump(PrintWriter)
 
   /**
@@ -66,6 +55,6 @@ public class BitTree {
    */
   public void load(InputStream source) {
     // STUB
-  }
+  } // load(InputStream)
 
-} // class BitTree
+} // class BitTreeLeaf
