@@ -1,4 +1,3 @@
-import java.io.InputStream;
 import java.io.PrintWriter;
 
 /**
@@ -11,6 +10,7 @@ public interface BitTreeNode {
   // +---------+-----------------------------------------------------------
   // | Methods |
   // +---------+
+
   /**
    * adds or replaces the value at the end with value
    * 
@@ -29,17 +29,38 @@ public interface BitTreeNode {
   public String get(String bits); // get(String)
 
   /**
-   * prints out the contents of the tree in CSV format
+   * grabs left node
    * 
-   * @param pen
+   * @return left node
    */
-  public void dump(PrintWriter pen); // dump(PrintWriter)
+  public BitTreeNode getLeft();// getLeft()
 
   /**
-   * reads a series of lines of the form bits,value and stores them in the tree.
+   * grabs rigth node
    * 
-   * @param source
+   * @return rigth node
    */
-  public void load(InputStream source);
+  public BitTreeNode getRight();// getRight()
+
+  /**
+   * gets the path of the value
+   * 
+   * @return bit string
+   */
+  public String getPath(); // getPath()
+
+  /**
+   * grabs the parent node
+   * 
+   * @return the parent node of a leaf or node
+   */
+  public BitTreeInnerNode getParent(); // getParent()
+
+  // /**
+  //  * prints out the contents of the tree in CSV format
+  //  * 
+  //  * @param pen
+  //  */
+  // public void dump(PrintWriter pen);
 
 } // interface BitTreeNode

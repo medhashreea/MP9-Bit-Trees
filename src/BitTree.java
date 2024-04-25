@@ -17,7 +17,7 @@ public class BitTree {
   private int n;
 
   // the root of the tree
-  private BitTreeNode root;
+  private BitTreeInnerNode root;
 
   // +--------------+------------------------------------------------------
   // | Constructors |
@@ -25,7 +25,7 @@ public class BitTree {
 
   public BitTree(int n) {
     this.n = n;
-    this.root = new BitTreeInnerNode();
+    this.root = new BitTreeInnerNode(null);
   }
 
   // +---------+-----------------------------------------------------------
@@ -41,14 +41,17 @@ public class BitTree {
    */
   public void illArgCheck(String bits) {
     if (bits.length() != this.n) {
-      throw new IllegalArgumentException("Invalid bits length!");
+      throw new IllegalArgumentException("Invalid bits length: " + bits.length() + "!");
     } // if exception
 
-    for (char c : bits.toCharArray()) {
-      if ((c != '0') || (c != '1')) {
-        throw new IllegalArgumentException("bits can only contain 0 and 1");
-      }
-    } // if exception
+    if (!(bits.contains("0")) && !(bits.contains("1"))) {
+      throw new IllegalArgumentException("Bits can only contain 0 and 1.");
+    }
+    // for (char c : bits.toCharArray()) {
+    //   if ((c != '0') || (c != '1')) {
+    //     throw new IllegalArgumentException("Bits can only contain 0 and 1. " + c + " is not valid" + "!");
+    //   }
+    // } // if exception
   } // illArgCheck(String, String)
 
   /**
@@ -84,10 +87,61 @@ public class BitTree {
    * 
    * @param pen
    */
+  public void dumpHelper(PrintWriter pen, String bits, BitTreeNode node) {
+    if ((node.getRight() == null) && (node.getLeft() == null)) {
+      pen.println(node.getPath() + "," + node.get(bits));
+    } else if (node.getLeft() != null) {
+      pen.println(node.getPath() + "," + node.get(bits));
+      dumpHelper(pen, node.getLeft().getPath(), node.getLeft());
+    } else if (node.getRight() != null) {
+      pen.println(node.getPath() + "," + node.get(bits));
+      dumpHelper(pen, node.getRight().getPath(), node.getRight());
+    }
+  } // dumpHelper(PrintWriter)
+
+  /**
+   * prints out the contents of the tree in CSV format
+   * 
+   * @param pen
+   */
   public void dump(PrintWriter pen) {
-    root.dump(pen);
+    // traverse,
+    // if not leaf = empty leaf -> recursive call
+    // if leaf pen.printand return
+    dumpHelper(pen, root.getPath(), root);
+    // if (root.getLeft() != null) {
+    //   pen.println(pen + "," + root.getPath());
+    // } else {
+    //   pen.println(pen + "," + root.getPath());
+    // }
+
+    // root.dump(pen);
   } // dump(PrintWriter)
 
+  // /**
+  // * prints out the contents of the tree in CSV format
+  // *
+  // * @param pen
+  // */
+  // public void dump(PrintWriter pen) {
+  // // traverse,
+  // // if not leaf = empty leaf -> recursive call
+  // // if leaf pen.print and return
+
+  // // if 0, then left
+  // // if (branch.equals('0')) {
+  // // if (left == null) { // if left is null
+  // // return null;
+  // // } // if not null
+  // // left.get(bits.substring(1)); // recursive get
+  // // } // else check if 1
+  // // else if (branch.equals('1')) {
+  // // if (right == null) { // if left is null
+  // // return null;
+  // // } // if not null
+  // // right.get(bits.substring(1)); // recursive get
+  // // }
+  // } // dump(PrintWriter)
   /**
    * reads a series of lines of the form bits,value and stores them in the tree.
    * 
@@ -99,7 +153,7 @@ public class BitTree {
       while (input.hasNextLine()) {
         String _line = input.nextLine();
 
-        // split at comma 
+        // split at comma
         // ex: 100000,A --> [100000] [A]
         String[] _split = _line.split(",");
 
@@ -120,3 +174,28 @@ public class BitTree {
   } // load(InputStream)
 
 } // class BitTree
+
+// /**
+// * prints out the contents of the tree in CSV format
+// *
+// * @param pen
+// */
+// public void dump(PrintWriter pen) {
+// // traverse,
+// // if not leaf = empty leaf -> recursive call
+// // if leaf pen.print and return
+
+// // if 0, then left
+// // if (branch.equals('0')) {
+// // if (left == null) { // if left is null
+// // return null;
+// // } // if not null
+// // left.get(bits.substring(1)); // recursive get
+// // } // else check if 1
+// // else if (branch.equals('1')) {
+// // if (right == null) { // if left is null
+// // return null;
+// // } // if not null
+// // right.get(bits.substring(1)); // recursive get
+// // }
+// } // dump(PrintWriter)

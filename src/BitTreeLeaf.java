@@ -1,4 +1,3 @@
-import java.io.InputStream;
 import java.io.PrintWriter;
 
 /**
@@ -14,6 +13,17 @@ public class BitTreeLeaf implements BitTreeNode {
 
   // the value of the node
   private String value;
+
+  // the parent node
+  private BitTreeInnerNode parent;
+
+  // +--------------+------------------------------------------------------
+  // | Constructors |
+  // +--------------+
+
+  public BitTreeLeaf(BitTreeInnerNode parent) {
+    this.parent = parent;
+  }
 
   // +---------+-----------------------------------------------------------
   // | Methods |
@@ -40,21 +50,58 @@ public class BitTreeLeaf implements BitTreeNode {
   } // get(String)
 
   /**
-   * prints out the contents of the tree in CSV format
+   * grabs left node
    * 
-   * @param pen
+   * @return left node
    */
-  public void dump(PrintWriter pen) {
-    pen.println(this.value);
-  } // dump(PrintWriter)
+  public BitTreeNode getLeft() {
+    return null;
+  } // getLeft()
 
   /**
-   * reads a series of lines of the form bits,value and stores them in the tree.
+   * grabs rigth node
    * 
-   * @param source
+   * @return rigth node
    */
-  public void load(InputStream source) {
-    // STUB
-  } // load(InputStream)
+  public BitTreeNode getRight() {
+    return null;
+  } // getRight()
+
+  /**
+   * gets the path of the value
+   * 
+   * @return bit string
+   */
+  public String getPath() {
+    // base case:
+    // if the parent is null, then nothing to check
+    if (this.parent == null) {
+      return "";
+    } else if (this.parent.getLeft() == this) {
+      // else, check if left
+      return parent.getPath() + "0";
+    } else {
+      // else, it has to be right
+      return parent.getPath() + "1";
+    }
+  } // getPath()
+
+  /**
+   * grabs the parent node
+   * 
+   * @return the parent node of a leaf or node
+   */
+  public BitTreeInnerNode getParent() {
+    return this.parent;
+  } // getParent()
+
+  // /**
+  // * prints out the value
+  // *
+  // * @param pen
+  // */
+  // public void dump(PrintWriter pen) {
+  // pen.println(value);
+  // } // dump(PrintWriter)
 
 } // class BitTreeLeaf
