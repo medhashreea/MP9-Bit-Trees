@@ -9,7 +9,7 @@ Purpose/Description: We explore mechanisms for representing binary information a
 
 Acknowledgements:
 
-    Tutors: 
+    Tutors: Peter, Boston
     Peers: Alyssa
     Faculty: Sam
 

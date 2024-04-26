@@ -25,7 +25,7 @@ public class BitTree {
 
   public BitTree(int n) {
     this.n = n;
-    this.root = new BitTreeInnerNode(null);
+    this.root = new BitTreeInnerNode();
   }
 
   // +---------+-----------------------------------------------------------
@@ -33,40 +33,16 @@ public class BitTree {
   // +---------+
 
   /**
-   * throw an exception if bits is the inappropriate length or contains values
-   * other than 0 or 1
-   * 
-   * @param bits
-   * @param value
-   */
-  public void illArgCheck(String bits) {
-    if (bits.length() != this.n) {
-      throw new IllegalArgumentException("Invalid bits length: " + bits.length() + "!");
-    } // if exception
-
-    if (!(bits.contains("0")) && !(bits.contains("1"))) {
-      throw new IllegalArgumentException("Bits can only contain 0 and 1.");
-    }
-    // for (char c : bits.toCharArray()) {
-    //   if ((c != '0') || (c != '1')) {
-    //     throw new IllegalArgumentException("Bits can only contain 0 and 1. " + c + " is not valid" + "!");
-    //   }
-    // } // if exception
-  } // illArgCheck(String, String)
-
-  /**
    * adds or replaces the value at the end with value
    * 
    * @param bits
    * @param value
-   * @return
    */
   public void set(String bits, String value) {
     // calls exception check method
     illArgCheck(bits);
 
-    // recursively call set on bit and value
-    root.set(bits, value);
+    setHelp(root, bits, value);
   } // set(String, String)
 
   /**
@@ -74,12 +50,13 @@ public class BitTree {
    * 
    * @param bits
    * @return
+   * @throws Exception
    */
-  public String get(String bits) {
+  public String get(String bits) throws Exception {
     // calls exception check method
     illArgCheck(bits);
 
-    return root.get(bits);
+    return getHelp(root, bits);
   } // get(String)
 
   /**
@@ -87,61 +64,10 @@ public class BitTree {
    * 
    * @param pen
    */
-  public void dumpHelper(PrintWriter pen, String bits, BitTreeNode node) {
-    if ((node.getRight() == null) && (node.getLeft() == null)) {
-      pen.println(node.getPath() + "," + node.get(bits));
-    } else if (node.getLeft() != null) {
-      pen.println(node.getPath() + "," + node.get(bits));
-      dumpHelper(pen, node.getLeft().getPath(), node.getLeft());
-    } else if (node.getRight() != null) {
-      pen.println(node.getPath() + "," + node.get(bits));
-      dumpHelper(pen, node.getRight().getPath(), node.getRight());
-    }
-  } // dumpHelper(PrintWriter)
-
-  /**
-   * prints out the contents of the tree in CSV format
-   * 
-   * @param pen
-   */
   public void dump(PrintWriter pen) {
-    // traverse,
-    // if not leaf = empty leaf -> recursive call
-    // if leaf pen.printand return
-    dumpHelper(pen, root.getPath(), root);
-    // if (root.getLeft() != null) {
-    //   pen.println(pen + "," + root.getPath());
-    // } else {
-    //   pen.println(pen + "," + root.getPath());
-    // }
-
-    // root.dump(pen);
+    pen.println(dumpHelper(root, ""));
   } // dump(PrintWriter)
 
-  // /**
-  // * prints out the contents of the tree in CSV format
-  // *
-  // * @param pen
-  // */
-  // public void dump(PrintWriter pen) {
-  // // traverse,
-  // // if not leaf = empty leaf -> recursive call
-  // // if leaf pen.print and return
-
-  // // if 0, then left
-  // // if (branch.equals('0')) {
-  // // if (left == null) { // if left is null
-  // // return null;
-  // // } // if not null
-  // // left.get(bits.substring(1)); // recursive get
-  // // } // else check if 1
-  // // else if (branch.equals('1')) {
-  // // if (right == null) { // if left is null
-  // // return null;
-  // // } // if not null
-  // // right.get(bits.substring(1)); // recursive get
-  // // }
-  // } // dump(PrintWriter)
   /**
    * reads a series of lines of the form bits,value and stores them in the tree.
    * 
@@ -173,29 +99,133 @@ public class BitTree {
     } // try
   } // load(InputStream)
 
+  // +---------+-----------------------------------------------------------
+  // | Helpers |
+  // +---------+
+
+  /**
+   * throw an exception if bits is the inappropriate length or contains values
+   * other than 0 or 1
+   * 
+   * @param bits
+   */
+  public void illArgCheck(String bits) {
+    // length check
+    if (bits.length() != this.n) {
+      throw new IllegalArgumentException("Invalid bits length: " + bits.length() + "!");
+    } // if exception
+
+    for (int i = 0; i < bits.length(); i++) {
+      if (bits.charAt(i) != '0' && bits.charAt(i) != '1') {
+        throw new IllegalArgumentException("Invalid bits!");
+      }
+    } // bits check
+
+    return;
+  } // illArgCheck(String, String)
+
+  /**
+   * helps adds or replaces the value at the end with value
+   * 
+   * @param node
+   * @param bits
+   * @param value
+   */
+  public void setHelp(BitTreeNode node, String bits, String value) {
+    char branch = bits.charAt(0);
+
+    // base case, if we are one before the leaf, check branch
+    if (bits.length() == 1) {
+      // set node to be either left or right
+      if (branch == '0') {
+        ((BitTreeInnerNode) node).left = new BitTreeLeaf(value);
+      } else {
+        ((BitTreeInnerNode) node).right = new BitTreeLeaf(value);
+      }
+    } // if not one before leaf, check value
+    else if (branch == '0') { // if it is an innernode with a left branch
+      if ((node instanceof BitTreeInnerNode) && (((BitTreeInnerNode) node).hasLeft())) {
+        setHelp((((BitTreeInnerNode) node).left), bits.substring(1), value); // recursive set
+      } else {
+        // create and set
+        ((BitTreeInnerNode) node).left = new BitTreeInnerNode(); // make a new BitTreeInnerNode & init to node
+        setHelp(((BitTreeInnerNode) node).left, bits.substring(1), value); // recursive set
+      }
+    } // if branch is 1
+    else if (branch == '1') {
+      if ((node instanceof BitTreeInnerNode) && (((BitTreeInnerNode) node).hasRight())) {
+        setHelp((((BitTreeInnerNode) node).right), bits.substring(1), value); // recursive set
+      } else {
+        // create and set
+        ((BitTreeInnerNode) node).right = new BitTreeInnerNode(); // make a new BitTreeInnerNode & init to node
+        setHelp(((BitTreeInnerNode) node).right, bits.substring(1), value); // recursive set
+      }
+    } // cond check
+  } // set(String, String)
+
+  /**
+   * returns the value at the end
+   * 
+   * @param bits
+   * @return value as string
+   * @throws Exception
+   */
+  public String getHelp(BitTreeNode node, String bits) throws Exception {
+    // branch is either 0 (left) or 1 (right)
+    Character branch = bits.charAt(0);
+
+    // leaf case
+    if (node instanceof BitTreeLeaf) {
+      if (bits.length() == 0) {
+        return ((BitTreeLeaf) node).value;
+      } else {
+        throw new Exception("Invalid length!");
+      }
+    } // if not leaf, inner node
+    else {
+      if (bits.length() == 0) {
+        throw new Exception("Element not found!");
+      }
+
+      // if goes left
+      if (branch == '0') {
+        // recurse on left
+        return getHelp(((BitTreeInnerNode) node).left, bits.substring(1));
+      } else if (branch == '1') {
+        // recurse on right
+        return getHelp(((BitTreeInnerNode) node).right, bits.substring(1));
+      } else {
+        // if neither, then invalid
+        throw new Exception("Element not found!");
+      } // branch check
+    } // leaf/non-leaf check
+  } // getHelp(String, BitTreeNode)
+
+  /**
+   * prints out the contents of the tree in CSV format
+   * 
+   * @param pen
+   */
+  public String dumpHelper(BitTreeNode node, String bits) {
+    String bitStr = "";
+
+    // leaf case
+    if (node instanceof BitTreeLeaf) {
+      return bitStr + bits + "," + ((BitTreeLeaf) node).value + "\n";
+    } // innernode case
+    else if (node instanceof BitTreeInnerNode) {
+      if (((BitTreeInnerNode) node).hasLeft()) {
+        bitStr += dumpHelper(((BitTreeInnerNode) node).left, bits + "0");
+      } // left check
+
+      if (((BitTreeInnerNode) node).hasRight()) {
+        bitStr += dumpHelper(((BitTreeInnerNode) node).right, bits + "1");
+      } // right check
+
+      return bitStr;
+    }
+
+    return "";
+  } // dumpHelper(BitTreeNode, String)
+
 } // class BitTree
-
-// /**
-// * prints out the contents of the tree in CSV format
-// *
-// * @param pen
-// */
-// public void dump(PrintWriter pen) {
-// // traverse,
-// // if not leaf = empty leaf -> recursive call
-// // if leaf pen.print and return
-
-// // if 0, then left
-// // if (branch.equals('0')) {
-// // if (left == null) { // if left is null
-// // return null;
-// // } // if not null
-// // left.get(bits.substring(1)); // recursive get
-// // } // else check if 1
-// // else if (branch.equals('1')) {
-// // if (right == null) { // if left is null
-// // return null;
-// // } // if not null
-// // right.get(bits.substring(1)); // recursive get
-// // }
-// } // dump(PrintWriter)
